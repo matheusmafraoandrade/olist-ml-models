@@ -1,18 +1,4 @@
 -- Databricks notebook source
-SELECT DISTINCT
-      t1.idPedido,
-      t2.idVendedor
-      
-FROM silver.olist.pedido AS t1
-
-LEFT JOIN silver.olist.item_pedido as t2
-ON t1.idPedido = t2.idPedido
-
-WHERE dtPedido < '2018-01-01'
-AND dtPedido >= add_months('2018-01-01', -6)
-
--- COMMAND ----------
-
 WITH tb_pedidos AS (
   
   -- Trazer informações do vendedor para a tabela de pedidos (só existe na item_pedido). Distinct garante que tenha apenas um vendedor por linha
