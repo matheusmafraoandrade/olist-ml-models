@@ -17,6 +17,7 @@ WITH tb_pedido AS (
 
   WHERE t1.dtpedido < '2018-01-01'
   AND t1.dtPedido >= add_months('2018-01-01', -6)
+  AND idVendedor IS NOT NULL
 
   GROUP BY t1.idPedido,
          t2.idVendedor,
@@ -27,7 +28,8 @@ WITH tb_pedido AS (
          t1.dtEstimativaEntrega
 )
 
-SELECT idVendedor,
+SELECT '2018-01-01' as dtReference,
+       idVendedor,
        count(DISTINCT CASE WHEN date(coalesce(dtEntregue, '2018-01-01')) > date(dtEstimativaEntrega) THEN idPedido END) /
          count(DISTINCT CASE WHEN descSituacao = 'delivered' THEN idPedido END) AS pctPedidoAtraso,
        count(CASE WHEN descSituacao = 'canceled' THEN idPedido END) / count(DISTINCT idPedido) AS pctPedidoCancelado,
