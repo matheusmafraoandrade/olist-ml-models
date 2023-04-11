@@ -13,7 +13,7 @@ WITH tb_join AS (
   LEFT JOIN silver.olist.produto AS t3
   ON t2.idProduto = t3.idProduto
 
-  WHERE t1.dtPedido > '2018-01-01'
+  WHERE t1.dtPedido < '2018-01-01'
   AND t1.dtPedido >= add_months('2018-01-01', -6)
   AND t2.idVendedor IS NOT NULL
 ),
