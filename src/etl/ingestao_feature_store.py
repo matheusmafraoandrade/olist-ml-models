@@ -69,10 +69,3 @@ else: #UPDATE
               .mode('append')
               .saveAsTable(f'{database}.{table_name}')
         )
-
-# COMMAND ----------
-
-query = import_query("vendas.sql")
-
-df = spark.sql(query.format(date='2018-01-01'))
-df.display()

@@ -1,4 +1,3 @@
--- Databricks notebook source
 WITH tb_pedidos AS (
   
   -- Trazer informações do vendedor para a tabela de pedidos (só existe na item_pedido). Distinct garante que tenha apenas um vendedor por linha
@@ -11,8 +10,8 @@ WITH tb_pedidos AS (
   LEFT JOIN silver.olist.item_pedido as t2
   ON t1.idPedido = t2.idPedido
 
-  WHERE t1.dtPedido < '2018-01-01'
-  AND t1.dtPedido >= add_months('2018-01-01', -6)
+  WHERE t1.dtPedido < '{date}'
+  AND t1.dtPedido >= add_months('{date}', -6)
   AND t2.idVendedor IS NOT NULL
 
 ),
@@ -121,7 +120,8 @@ tb_cartao AS (
 )
 
 SELECT 
-       '2018-01-01' AS dtReference, -- Marca quando essa informação foi gerada (em que momento estou olhando para o vendedor)
+       '{date}' AS dtReference, -- Marca quando essa informação foi gerada (em que momento estou olhando para o vendedor)
+       NOW() AS dtIngestion,
        t1.*,
        t2.avgQtdeParcelas,
        t2.medianQtdeParcelas,
@@ -133,7 +133,3 @@ FROM tb_summary AS t1
 
 LEFT JOIN tb_cartao AS t2
 ON t1.idVendedor = t2.idVendedor
-
--- COMMAND ----------
-
-

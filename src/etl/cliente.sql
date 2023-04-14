@@ -1,4 +1,3 @@
--- Databricks notebook source
 WITH tb_join AS (
   
   SELECT DISTINCT
@@ -15,8 +14,8 @@ WITH tb_join AS (
   LEFT JOIN silver.olist.cliente AS t3
   ON t1.idCliente = t3.idCliente
 
-  WHERE dtPedido < '2018-01-01'
-  AND dtPedido >= add_months('2018-01-01', -6)
+  WHERE dtPedido < '{date}'
+  AND dtPedido >= add_months('{date}', -6)
   AND idVendedor IS NOT NULL
   
 ),
@@ -59,7 +58,8 @@ tb_group AS (
   GROUP BY idVendedor
 )
   
-SELECT '2018-01-01' AS dtReference,
+SELECT '{date}' AS dtReference,
+       NOW() AS dtIngestion,
        *
        
 FROM tb_group
