@@ -63,13 +63,12 @@ if not table_exists(database, table_name): #CREATE
           .saveAsTable(f'{database}.{table_name}')
     )
     
-else: #UPDATE
-    for i in tqdm(dates):
-        spark.sql(f"DELETE FROM {database}.{table_name} WHERE dtReference = '{i}'")
-        (spark.sql(query.format(date=i))
-              .coalesce(1) 
-              .write
-              .format('delta')
-              .mode('append')
-              .saveAsTable(f'{database}.{table_name}')
-        )
+#UPDATE
+for i in tqdm(dates):
+    spark.sql(f"DELETE FROM {database}.{table_name} WHERE dtReference = '{i}'")
+    (spark.sql(query.format(date=i))
+          .coalesce(1) 
+          .write
+          .format('delta')
+          .mode('append')
+          .saveAsTable(f'{database}.{table_name}'))
