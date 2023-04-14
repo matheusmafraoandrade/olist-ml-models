@@ -1,4 +1,8 @@
 # Databricks notebook source
+!pip install tqdm
+
+# COMMAND ----------
+
 import datetime
 from tqdm import tqdm
 
