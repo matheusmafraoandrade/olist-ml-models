@@ -157,15 +157,21 @@ tb_flag AS (
   AND datediff(dtPedido, dtReference) <= 45 - qtdRecencia
 
   GROUP BY 1,2
-)
+),
 
-SELECT t1.*,
-       CASE WHEN t2.dtProxPedido IS NULL THEN 1 ELSE 0 END AS flChurn
+tb_final AS (
+  SELECT t1.*,
+         CASE WHEN t2.dtProxPedido IS NULL THEN 1 ELSE 0 END AS flChurn
 
-FROM tb_features AS t1
+  FROM tb_features AS t1
 
-LEFT JOIN tb_flag AS t2
-ON t1.idVendedor = t2.idVendedor
-AND t1.dtReference = t2.dtReference
+  LEFT JOIN tb_flag AS t2
+  ON t1.idVendedor = t2.idVendedor
+  AND t1.dtReference = t2.dtReference
 
-ORDER BY t1.idVendedor, t2.dtReference
+  ORDER BY t1.idVendedor, t2.dtReference
+ )
+ 
+select dtReference, count(*), count(distinct idVendedor)
+from tb_final
+group by 1
