@@ -1,9 +1,9 @@
 WITH tb_pedidos AS (
-  
-  -- Trazer informações do vendedor para a tabela de pedidos (só existe na item_pedido). Distinct garante que tenha apenas um vendedor por linha
-  SELECT DISTINCT
-        t1.idPedido,
-        t2.idVendedor
+
+  SELECT 
+      DISTINCT 
+      t1.idPedido,
+      t2.idVendedor
 
   FROM silver.olist.pedido AS t1
 
@@ -12,15 +12,15 @@ WITH tb_pedidos AS (
 
   WHERE t1.dtPedido < '{date}'
   AND t1.dtPedido >= add_months('{date}', -6)
-  AND t2.idVendedor IS NOT NULL
+  AND idVendedor IS NOT NULL
 
 ),
 
 tb_join AS (
 
-  -- Trazer informações sobre meios de pagamento
-  SELECT t1.idVendedor,
-         t2.*
+  SELECT 
+        t1.idVendedor,
+        t2.*         
 
   FROM tb_pedidos AS t1
 
@@ -31,11 +31,10 @@ tb_join AS (
 
 tb_group AS (
 
-  -- Agrupar por vendedor e tipo de pagamento (uma linha para cada vendedor e tipo de pagamento. EX: v1 | cdt, v1 | dbt, ...)
   SELECT idVendedor,
          descTipoPagamento,
-         count(distinct idPedido) AS qtdePedidoMeioPagamento,
-         sum(vlPagamento) AS vlPedidoMeioPagamento
+         count(distinct idPedido) as qtdePedidoMeioPagamento,
+         sum(vlPagamento) as vlPedidoMeioPagamento
 
   FROM tb_join
 
@@ -46,65 +45,37 @@ tb_group AS (
 
 tb_summary AS (
 
-  SELECT idVendedor,
+  SELECT 
+    idVendedor,
 
-        -- QUANTIDADE DE PEDIDOS POR MEIO DE PAGAMENTO
-        sum(CASE WHEN descTipoPagamento = 'boleto' 
-            then qtdePedidoMeioPagamento else 0 end) as qtde_boleto_pedido,
-        sum(CASE WHEN descTipoPagamento = 'credit_card' 
-            then qtdePedidoMeioPagamento else 0 end) as qtde_credit_card_pedido,
-        sum(CASE WHEN descTipoPagamento = 'voucher' 
-            then qtdePedidoMeioPagamento else 0 end) as qtde_voucher_pedido,
-        sum(CASE WHEN descTipoPagamento = 'debit_card' 
-            then qtdePedidoMeioPagamento else 0 end) as qtde_debit_card_pedido,
+    sum(case when descTipoPagamento='boleto' then qtdePedidoMeioPagamento else 0 end) as qtde_boleto_pedido,
+    sum(case when descTipoPagamento='credit_card' then qtdePedidoMeioPagamento else 0 end) as qtde_credit_card_pedido,
+    sum(case when descTipoPagamento='voucher' then qtdePedidoMeioPagamento else 0 end) as qtde_voucher_pedido,
+    sum(case when descTipoPagamento='debit_card' then qtdePedidoMeioPagamento else 0 end) as qtde_debit_card_pedido,
 
-        -- VALOR TOTAL POR MEIO DE PAGAMENTO
-        sum(CASE WHEN descTipoPagamento = 'boleto' 
-            then vlPedidoMeioPagamento else 0 end) as valor_boleto_pedido,
-        sum(CASE WHEN descTipoPagamento = 'credit_card' 
-            then vlPedidoMeioPagamento else 0 end) as valor_credit_card_pedido,
-        sum(CASE WHEN descTipoPagamento = 'voucher' 
-            then vlPedidoMeioPagamento else 0 end) as valor_voucher_pedido,
-        sum(CASE WHEN descTipoPagamento = 'debit_card' 
-            then vlPedidoMeioPagamento else 0 end) as valor_debit_card_pedido,
+    sum(case when descTipoPagamento='boleto' then vlPedidoMeioPagamento else 0 end) as valor_boleto_pedido,
+    sum(case when descTipoPagamento='credit_card' then vlPedidoMeioPagamento else 0 end) as valor_credit_card_pedido,
+    sum(case when descTipoPagamento='voucher' then vlPedidoMeioPagamento else 0 end) as valor_voucher_pedido,
+    sum(case when descTipoPagamento='debit_card' then vlPedidoMeioPagamento else 0 end) as valor_debit_card_pedido,
 
-        -- PERCENTUAL DA QUANTIDADE DE PEDIDOS POR MEIO DE PAGAMENTO
-        sum(CASE WHEN descTipoPagamento = 'boleto' 
-            then qtdePedidoMeioPagamento else 0 end) / sum(qtdePedidoMeioPagamento)
-            as pct_qtd_boleto_pedido,
-        sum(CASE WHEN descTipoPagamento = 'credit_card' 
-            then qtdePedidoMeioPagamento else 0 end) / sum(qtdePedidoMeioPagamento)
-            as pct_qtd_credit_card_pedido,
-        sum(CASE WHEN descTipoPagamento = 'voucher' 
-            then qtdePedidoMeioPagamento else 0 end) / sum(qtdePedidoMeioPagamento)
-            as pct_qtd_voucher_pedido,
-        sum(CASE WHEN descTipoPagamento = 'debit_card' 
-            then qtdePedidoMeioPagamento else 0 end) / sum(qtdePedidoMeioPagamento)
-            as pct_qtd_debit_card_pedido,
+    sum(case when descTipoPagamento='boleto' then qtdePedidoMeioPagamento else 0 end) / sum(qtdePedidoMeioPagamento) as pct_qtd_boleto_pedido,
+    sum(case when descTipoPagamento='credit_card' then qtdePedidoMeioPagamento else 0 end) / sum(qtdePedidoMeioPagamento) as pct_qtd_credit_card_pedido,
+    sum(case when descTipoPagamento='voucher' then qtdePedidoMeioPagamento else 0 end) / sum(qtdePedidoMeioPagamento) as pct_qtd_voucher_pedido,
+    sum(case when descTipoPagamento='debit_card' then qtdePedidoMeioPagamento else 0 end) / sum(qtdePedidoMeioPagamento) as pct_qtd_debit_card_pedido,
 
-        -- PERCENTUAL DO VALOR TOTAL POR MEIO DE PAGAMENTO
-        sum(CASE WHEN descTipoPagamento = 'boleto' 
-            then vlPedidoMeioPagamento else 0 end) / sum(vlPedidoMeioPagamento)
-            as pct_valor_boleto_pedido,
-        sum(CASE WHEN descTipoPagamento = 'credit_card' 
-            then vlPedidoMeioPagamento else 0 end) / sum(vlPedidoMeioPagamento)
-            as pct_valor_credit_card_pedido,
-        sum(CASE WHEN descTipoPagamento = 'voucher' 
-            then vlPedidoMeioPagamento else 0 end) / sum(vlPedidoMeioPagamento)
-            as pct_valor_voucher_pedido,
-        sum(CASE WHEN descTipoPagamento = 'debit_card' 
-            then vlPedidoMeioPagamento else 0 end) / sum(vlPedidoMeioPagamento)
-            as pct_valor_debit_card_pedido
+    sum(case when descTipoPagamento='boleto' then vlPedidoMeioPagamento else 0 end) / sum(vlPedidoMeioPagamento) as pct_valor_boleto_pedido,
+    sum(case when descTipoPagamento='credit_card' then vlPedidoMeioPagamento else 0 end) / sum(vlPedidoMeioPagamento) as pct_valor_credit_card_pedido,
+    sum(case when descTipoPagamento='voucher' then vlPedidoMeioPagamento else 0 end) / sum(vlPedidoMeioPagamento) as pct_valor_voucher_pedido,
+    sum(case when descTipoPagamento='debit_card' then vlPedidoMeioPagamento else 0 end) / sum(vlPedidoMeioPagamento) as pct_valor_debit_card_pedido
 
   FROM tb_group
 
-  GROUP BY 1
+  GROUP BY idVendedor
 
 ),
 
-tb_cartao AS (
-  
-  -- Estatísticas sobre o número de parcelas de cada vendedor (apenas cartão)
+tb_cartao as (
+
   SELECT idVendedor,
          AVG(nrParcelas) AS avgQtdeParcelas,
          PERCENTILE(nrParcelas, 0.5) AS medianQtdeParcelas,
@@ -120,16 +91,15 @@ tb_cartao AS (
 )
 
 SELECT 
-       '{date}' AS dtReference, -- Marca quando essa informação foi gerada (em que momento estou olhando para o vendedor)
+       '{date}' AS dtReference,
        NOW() AS dtIngestion,
        t1.*,
        t2.avgQtdeParcelas,
        t2.medianQtdeParcelas,
        t2.maxQtdeParcelas,
        t2.minQtdeParcelas
-       
 
-FROM tb_summary AS t1
+FROM tb_summary as t1
 
-LEFT JOIN tb_cartao AS t2
+LEFT JOIN tb_cartao as t2
 ON t1.idVendedor = t2.idVendedor
