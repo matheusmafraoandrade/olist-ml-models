@@ -1,4 +1,3 @@
--- Databricks notebook source
 WITH tb_join AS (
 
   SELECT DISTINCT
@@ -10,45 +9,48 @@ WITH tb_join AS (
   LEFT JOIN silver.olist.item_pedido AS t2
   ON t1.idPedido = t2.idPedido
 
-  LEFT JOIN silver.olist.produto AS t3
+  LEFT JOIN silver.olist.produto as t3
   ON t2.idProduto = t3.idProduto
 
-  WHERE t1.dtPedido < '2018-01-01'
-  AND t1.dtPedido >= add_months('2018-01-01', -6)
+  WHERE t1.dtPedido < '{date}'
+  AND t1.dtPedido >= add_months('{date}', -6)
   AND t2.idVendedor IS NOT NULL
+
 ),
 
-tb_summary AS (
+tb_summary as (
 
   SELECT idVendedor,
-         avg(COALESCE(nrFotos,0)) AS avgFotos,
-         avg(vlComprimentoCm * vlAlturaCm * vlLarguraCm) AS avgVolumeProduto,
-         percentile(vlComprimentoCm * vlAlturaCm * vlLarguraCm, 0.5) AS medianVolumeProduto,
-         min(vlComprimentoCm * vlAlturaCm * vlLarguraCm) AS minVolumeProduto,
-         max(vlComprimentoCm * vlAlturaCm * vlLarguraCm) AS maxVolumeProduto,
+         avg(coalesce(nrFotos,0)) as avgFotos,
+         avg(vlComprimentoCm * vlAlturaCm * vlLarguraCm) as avgVolumeProduto,
+         percentile(vlComprimentoCm * vlAlturaCm * vlLarguraCm, 0.5) as medianVolumeProduto,
+         min(vlComprimentoCm * vlAlturaCm * vlLarguraCm) as minVolumeProduto,
+         max(vlComprimentoCm * vlAlturaCm * vlLarguraCm) as maxVolumeProduto,
          
-         count(DISTINCT CASE WHEN descCategoria = 'cama_mesa_banho' THEN idProduto END) / count(DISTINCT idProduto) AS pctCategoriacama_mesa_banho,
-         count(DISTINCT CASE WHEN descCategoria = 'beleza_saude' THEN idProduto END) / count(DISTINCT idProduto) AS pctCategoriabeleza_saude,
-         count(DISTINCT CASE WHEN descCategoria = 'esporte_lazer' THEN idProduto END) / count(DISTINCT idProduto) AS pctCategoriaesporte_lazer,
-         count(DISTINCT CASE WHEN descCategoria = 'informatica_acessorios' THEN idProduto END) / count(DISTINCT idProduto) AS pctCategoriainformatica_acessorios,
-         count(DISTINCT CASE WHEN descCategoria = 'moveis_decoracao' THEN idProduto END) / count(DISTINCT idProduto) AS pctCategoriamoveis_decoracao,
-         count(DISTINCT CASE WHEN descCategoria = 'utilidades_domesticas' THEN idProduto END) / count(DISTINCT idProduto) AS pctCategoriautilidades_domesticas,
-         count(DISTINCT CASE WHEN descCategoria = 'relogios_presentes' THEN idProduto END) / count(DISTINCT idProduto) AS pctCategoriarelogios_presentes,
-         count(DISTINCT CASE WHEN descCategoria = 'telefonia' THEN idProduto END) / count(DISTINCT idProduto) AS pctCategoriatelefonia,
-         count(DISTINCT CASE WHEN descCategoria = 'automotivo' THEN idProduto END) / count(DISTINCT idProduto) AS pctCategoriaautomotivo,
-         count(DISTINCT CASE WHEN descCategoria = 'brinquedos' THEN idProduto END) / count(DISTINCT idProduto) AS pctCategoriabrinquedos,
-         count(DISTINCT CASE WHEN descCategoria = 'cool_stuff' THEN idProduto END) / count(DISTINCT idProduto) AS pctCategoriacool_stuff,
-         count(DISTINCT CASE WHEN descCategoria = 'ferramentas_jardim' THEN idProduto END) / count(DISTINCT idProduto) AS pctCategoriaferramentas_jardim,
-         count(DISTINCT CASE WHEN descCategoria = 'perfumaria' THEN idProduto END) / count(DISTINCT idProduto) AS pctCategoriaperfumaria,
-         count(DISTINCT CASE WHEN descCategoria = 'bebes' THEN idProduto END) / count(DISTINCT idProduto) AS pctCategoriabebes,
-         count(DISTINCT CASE WHEN descCategoria = 'eletronicos' THEN idProduto END) / count(DISTINCT idProduto) AS pctCategoriaeletronicos
+        count(distinct case when descCategoria = 'cama_mesa_banho' then idProduto end) / count(distinct idProduto) as pctCategoriacama_mesa_banho,
+        count(distinct case when descCategoria = 'beleza_saude' then idProduto end) / count(distinct idProduto) as pctCategoriabeleza_saude,
+        count(distinct case when descCategoria = 'esporte_lazer' then idProduto end) / count(distinct idProduto) as pctCategoriaesporte_lazer,
+        count(distinct case when descCategoria = 'informatica_acessorios' then idProduto end) / count(distinct idProduto) as pctCategoriainformatica_acessorios,
+        count(distinct case when descCategoria = 'moveis_decoracao' then idProduto end) / count(distinct idProduto) as pctCategoriamoveis_decoracao,
+        count(distinct case when descCategoria = 'utilidades_domesticas' then idProduto end) / count(distinct idProduto) as pctCategoriautilidades_domesticas,
+        count(distinct case when descCategoria = 'relogios_presentes' then idProduto end) / count(distinct idProduto) as pctCategoriarelogios_presentes,
+        count(distinct case when descCategoria = 'telefonia' then idProduto end) / count(distinct idProduto) as pctCategoriatelefonia,
+        count(distinct case when descCategoria = 'automotivo' then idProduto end) / count(distinct idProduto) as pctCategoriaautomotivo,
+        count(distinct case when descCategoria = 'brinquedos' then idProduto end) / count(distinct idProduto) as pctCategoriabrinquedos,
+        count(distinct case when descCategoria = 'cool_stuff' then idProduto end) / count(distinct idProduto) as pctCategoriacool_stuff,
+        count(distinct case when descCategoria = 'ferramentas_jardim' then idProduto end) / count(distinct idProduto) as pctCategoriaferramentas_jardim,
+        count(distinct case when descCategoria = 'perfumaria' then idProduto end) / count(distinct idProduto) as pctCategoriaperfumaria,
+        count(distinct case when descCategoria = 'bebes' then idProduto end) / count(distinct idProduto) as pctCategoriabebes,
+        count(distinct case when descCategoria = 'eletronicos' then idProduto end) / count(distinct idProduto) as pctCategoriaeletronicos
 
   FROM tb_join
 
   GROUP BY idVendedor
+
 )
 
-SELECT '2018-01-01' AS dtReference,
+SELECT '{date}' AS dtReference,
+       NOW() as dtIngestion,
        *
 
 FROM tb_summary
