@@ -1,4 +1,3 @@
--- Databricks notebook source
 SELECT
       t1.dtReference,
       t1.idVendedor,

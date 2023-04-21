@@ -1,49 +1,47 @@
 WITH tb_pedido AS (
 
   SELECT t1.idPedido,
-         t2.idVendedor,
-         t1.descSituacao,
-         t1.dtPedido,
-         t1.dtAprovado,
-         t1.dtEntregue,
-         t1.dtEstimativaEntrega,
-         sum(vlFrete) AS totalFrete
+        t2.idVendedor,
+        t1.descSituacao,
+        t1.dtPedido,
+        t1.dtAprovado,
+        t1.dtEntregue,
+        t1.dtEstimativaEntrega,
+        sum(vlFrete) as totalFrente       
 
   FROM silver.olist.pedido AS t1
 
-  LEFT JOIN silver.olist.item_pedido AS t2
+  LEFT JOIN silver.olist.item_pedido as t2
   ON t1.idPedido = t2.idPedido
 
-  WHERE t1.dtpedido < '{date}'
-  AND t1.dtPedido >= add_months('{date}', -6)
+  WHERE dtPedido < '{date}'
+  AND dtPedido >= add_months('{date}', -6)
   AND idVendedor IS NOT NULL
 
   GROUP BY t1.idPedido,
-         t2.idVendedor,
-         t1.descSituacao,
-         t1.dtPedido,
-         t1.dtAprovado,
-         t1.dtEntregue,
-         t1.dtEstimativaEntrega
-)
+          t2.idVendedor,
+          t1.descSituacao,
+          t1.dtPedido,
+          t1.dtAprovado,
+          t1.dtEntregue,
+          t1.dtEstimativaEntrega
+  )
 
-SELECT '{date}' as dtReference,
-       NOW() AS dtIngestion,
-       idVendedor,
-       count(DISTINCT CASE WHEN date(coalesce(dtEntregue, '{date}')) > date(dtEstimativaEntrega) THEN idPedido END) /
-         count(DISTINCT CASE WHEN descSituacao = 'delivered' THEN idPedido END) AS pctPedidoAtraso,
-       count(CASE WHEN descSituacao = 'canceled' THEN idPedido END) / count(DISTINCT idPedido) AS pctPedidoCancelado,
-       
-       avg(totalFrete) as avgFrete,
-       percentile(totalFrete, 0.5) as medianFrete,
-       min(totalFrete) as minFrete,
-       max(totalFrete) as maxFrete,
-       
-       avg(datediff(coalesce(dtEntregue, '{date}'), dtAprovado)) AS qtdDiasAprovadoEntrega,
-       avg(datediff(coalesce(dtEntregue, '{date}'), dtPedido)) AS qtdPedidoEntrega,
-       
-       avg(datediff(dtEstimativaEntrega, coalesce(dtEntregue, '{date}'))) AS qtdeDiasEntregaPromessa
-       
+SELECT
+
+    '{date}' AS dtReference,
+    NOW() AS dtIngestion,
+    idVendedor,
+    COUNT(DISTINCT CASE WHEN date(coalesce(dtEntregue, '{date}')) > date(dtEstimativaEntrega) THEN idPedido END) / COUNT(DISTINCT CASE WHEN descSituacao = 'delivered' THEN idPedido END) AS pctPedidoAtraso,
+    count(distinct case when descSituacao = 'canceled' then idPedido end) / count(distinct idPedido) AS pctPedidoCancelado,
+    avg(totalFrente) as avgFrete,
+    percentile(totalFrente, 0.5) as medianFrete,
+    max(totalFrente) as maxFrete,
+    min(totalFrente) as minFrete,
+    avg(datediff(coalesce(dtEntregue, '{date}'), dtAprovado)) AS qtdDiasAprovadoEntrega,
+    avg(datediff(coalesce(dtEntregue, '{date}'), dtPedido)) AS qtdDiasPedidoEntrega,
+    avg(datediff(dtEstimativaEntrega, coalesce(dtEntregue, '{date}'))) AS qtdeDiasEntregaPromessa
+      
 FROM tb_pedido
 
-GROUP BY idVendedor
+GROUP BY 1,2,3
