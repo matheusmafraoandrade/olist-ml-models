@@ -1,9 +1,7 @@
 -- Databricks notebook source
-SELECT 
+SELECT
       t1.dtReference,
-      t1.dtIngestion,
       t1.idVendedor,
-
       t1.qtdPedidos,
       t1.qtdDias,
       t1.qtItens,
@@ -16,15 +14,15 @@ SELECT
       t1.minVlPedido,
       t1.maxVlPedido,
       t1.LTV,
+
       t1.qtdeDiasBase,
       t1.avgIntervaloVendas,
-
       t2.avgNota,
       t2.medianNota,
       t2.minNota,
       t2.maxNota,
-      t2.pctAvaliacao,
 
+      t2.pctAvaliacao,
       t3.qtdUFsPedidos,
       t3.pctPedidoAC,
       t3.pctPedidoAL,
@@ -54,16 +52,6 @@ SELECT
       t3.pctPedidoSP,
       t3.pctPedidoTO,
 
-      t4.pctPedidoAtraso,
-      t4.pctPedidoCancelado,
-      t4.avgFrete,
-      t4.medianFrete,
-      t4.maxFrete,
-      t4.minFrete,
-      t4.qtdDiasAprovadoEntrega,
-      t4.qtdDiasPedidoEntrega,
-      t4.qtdeDiasEntregaPromessa,
-
       t5.qtde_boleto_pedido,
       t5.qtde_credit_card_pedido,
       t5.qtde_voucher_pedido,
@@ -84,7 +72,6 @@ SELECT
       t5.medianQtdeParcelas,
       t5.maxQtdeParcelas,
       t5.minQtdeParcelas,
-
       t6.avgFotos,
       t6.avgVolumeProduto,
       t6.medianVolumeProduto,
@@ -128,8 +115,6 @@ LEFT JOIN silver.analytics.fs_vendedor_produto AS t6
 ON t1.idVendedor = t6.idVendedor
 AND t1.dtReference = t6.dtReference
 
-WHERE t1.dtReference = (SELECT max(dtReference) FROM silver.analytics.fs_vendedor_vendas)
+WHERE t1.dtReference = (select max(dtReference) from silver.analytics.fs_vendedor_vendas)
 
--- COMMAND ----------
-
-
+;
